@@ -13,8 +13,8 @@ public class Livro {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(length = 20, nullable = false) // nullable fala que é um campo not nnull
     private String isbn;
@@ -46,11 +46,11 @@ public class Livro {
         this.autor = autor;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
