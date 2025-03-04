@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
@@ -59,6 +61,18 @@ public class AutorController {
         autorService.deletarAutor(autorDeletadoPorId.get());
         return ResponseEntity.noContent().build();
 
+    }
+
+    @GetMapping  //TOMAR CUIDADO PARA NÃO TER PARAMETROS REPETIDOS
+    public ResponseEntity<List<AutorDTO>> pesquisar (@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) { // RequestParam PARAMETROS DA PESQUIA, , required = false INDICA QUE NÃO É OBRIGATORIO PASSAR ESSES 2 PARAMETROS
+
+        List<Autor> resultado =  autorService.pesquisarAutor(nome, nacionalidade);
+        List<AutorDTO> lista = resultado
+                .stream()
+                .map(autor ->  new AutorDTO( // AQUI ELE VAI MAPEAR CADA RESULTADO
+                autor.getId(),autor.getNome(), autor.getDataNascimento(), autor.getNacionalidade()) // AQUI ELE VAI TA TRANSFORMANDO ESSES RESULTADOS EM UM AUTORDTO
+                ).collect(Collectors.toList()); // AQUI ELE TA TRANSFORMANDO CADA AUTORDTO EM UM ITEM DE LISTA
+        return ResponseEntity.ok(lista);
     }
 
 }
