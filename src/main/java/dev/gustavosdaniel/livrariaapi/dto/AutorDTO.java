@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 
 //QUANDO VC QUISER APENAS ALGUMASA INFORMAÇÕES DA SUA ENTIDADE
-public record AutorDTO(String nome, LocalDate dataNascimento, String nacionalidade) {
+public record AutorDTO(Long id, String nome, LocalDate dataNascimento, String nacionalidade) {
 
     public Autor mapearParaAutor() { //TRANFERINDO ESSAS INFORMAÇÕES PARA A ENTIDADE AUTOR
 

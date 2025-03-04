@@ -1,11 +1,15 @@
 package dev.gustavosdaniel.livrariaapi.model;
 
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
+@EntityListeners(AuditingEntityListener.class) // PARA QUE A ANOTAÇAO DA DATA DE CERTO
 @Entity
 @Table(name = "autor")
 public class Autor {
@@ -23,6 +27,17 @@ public class Autor {
 
     @Column(name = "data_nascimento", nullable = false)// nullable fala que é um campo not nnull
     private LocalDate dataNascimento;
+
+    @CreatedDate //TODA VES QUE FOI CRIAR A DATA ELE JA VAI COLOCAR AUTOMATICAMENTE
+    @Column(name = "data_cadastro", nullable = false)
+    private LocalDateTime dataCadastro;
+
+    @LastModifiedDate // TODA VEZ QUE FOR MODEIFICAR A DATA ELE JA VAI SER MODIFICADO AUTOMATICAMENTE
+    @Column(name = "data_atualização", nullable = false)
+    private LocalDateTime dataAtualizacao;
+
+    @Column(name = "id_usuario")
+    private Long idUsuario;
 
     @OneToMany(mappedBy = "autor") // UM AUTOR PARA VARIOS LIVROS, MAPEADO PELA ENTIDADE AUTOR "autor" ( QUE ESTA NA TABELA DE LIVROS)
     private List<Livro> livros;
