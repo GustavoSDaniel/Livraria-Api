@@ -47,4 +47,18 @@ public class AutorController {
         return ResponseEntity.notFound().build(); // ERRO 404 DE ID NÃO ENCONTRADO
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarAutorPorId(@PathVariable("id") Long id) {
+
+        Optional<Autor> autorDeletadoPorId = autorService.obterPorId(id);
+
+        if (autorDeletadoPorId.isEmpty()) { // SE NÃO TIVER AUTOR
+            return ResponseEntity.notFound().build();
+        }
+
+        autorService.deletarAutor(autorDeletadoPorId.get());
+        return ResponseEntity.noContent().build();
+
+    }
+
 }

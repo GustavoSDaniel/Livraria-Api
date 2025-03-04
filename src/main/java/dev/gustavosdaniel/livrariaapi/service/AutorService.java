@@ -23,4 +23,8 @@ public class AutorService {
     public Optional<Autor> obterPorId(Long id) { // OPTIONAL PQ PODE TER OU NAO O ID
         return autorRepository.findById(id);
     }
+
+    public void deletarAutor(Autor autor) {
+        autorRepository.delete(autor);
+    }
 }
