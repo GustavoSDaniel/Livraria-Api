@@ -1,23 +1,34 @@
 package dev.gustavosdaniel.livrariaapi.service;
 
 
+import dev.gustavosdaniel.livrariaapi.exceptions.OperacaoNaoPermitidaException;
 import dev.gustavosdaniel.livrariaapi.model.Autor;
 import dev.gustavosdaniel.livrariaapi.repository.AutorRepository;
+import dev.gustavosdaniel.livrariaapi.repository.LivroRepository;
+import dev.gustavosdaniel.livrariaapi.validator.AutorValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
+@RequiredArgsConstructor // FAZ A INJEÇÃO DE DEPENDENCIA SEM ´PRECISAR FICAR CRIANDO CONSTRUTOR
 public class AutorService {
 
     public final AutorRepository autorRepository; //INJESAO DE DEPENDECIA
+    public final AutorValidator autorValidator; //INJESAO DE DEPENDECIA
+    public final LivroRepository livroRepository;
 
-    public AutorService(AutorRepository autorRepository) {   //INJESAO DE DEPENDECIA
-        this.autorRepository = autorRepository;
-    }
+  //  public AutorService(AutorRepository autorRepository, AutorValidator autorValidator, LivroRepository livroRepository) {
+  //      this.autorRepository = autorRepository;
+  //      this.autorValidator = autorValidator;
+  //      this.livroRepository = livroRepository;
+  //  }
 
     public Autor salvar(Autor autor) {  // SALVANDO AUTOR
+        autorValidator.validarAutor(autor); // VALIDANDO SE JA NÃO EXISTE NENHUM AUTOR COM ESSE CADASTRO
         return autorRepository.save(autor);
     }
 
@@ -26,6 +37,11 @@ public class AutorService {
     }
 
     public void deletarAutor(Autor autor) {
+
+        if (autorPossuiLivro(autor)) {
+            throw new OperacaoNaoPermitidaException("Não é permitido excluir um Autor que possui livros cadastrados");
+        }
+
         autorRepository.delete(autor);
     }
 
@@ -44,5 +60,17 @@ public class AutorService {
         }
 
         return autorRepository.findAll();
+    }
+
+    public void atualizarAutorPorId(Autor autor) {
+        if (autor.getId() == null) { // VERIFICANDO SE JA TEM ESSE ID PARA QUE POSSA SER ATUALIZADO
+            throw new IllegalArgumentException("Para atualizar, é necessaáio que já o autor já esteja salvo na base");
+        }
+        autorValidator.validarAutor(autor); // VALIDANDO SE O AUTOR PODE SER ATUALIZADO
+        autorRepository.save(autor);
+    }
+
+    public boolean autorPossuiLivro(Autor autor) {
+        return livroRepository.existsByAutor(autor);
     }
 }
