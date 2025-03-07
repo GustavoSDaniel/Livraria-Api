@@ -6,8 +6,10 @@ import dev.gustavosdaniel.livrariaapi.exceptions.OperacaoNaoPermitidaException;
 import dev.gustavosdaniel.livrariaapi.exceptions.RegistroDuplicadoExeption;
 import dev.gustavosdaniel.livrariaapi.model.Autor;
 import dev.gustavosdaniel.livrariaapi.service.AutorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -28,7 +30,7 @@ public class AutorController {
    // }
 
     @PostMapping
-    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autorDTO) { // ResponseEntity É UMA CLASSE QUE REPRESENTA UMA RESPOSTA  NESSE CASO ELE VAI RETORNAR COMO RESPOTA O BOJETO CRIADO EM FORMA DE ID;URL DARIA CERTO TBM SE TIVESSE COLOCADO VOID
+    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO autorDTO) { // ResponseEntity É UMA CLASSE QUE REPRESENTA UMA RESPOSTA  NESSE CASO ELE VAI RETORNAR COMO RESPOTA O BOJETO CRIADO EM FORMA DE ID;URL DARIA CERTO TBM SE TIVESSE COLOCADO VOID, @Valid PARA VALIDAR SE OS CAMPOS FORAM PREENCHIDOS CORRETAMENTE DE ACORDO COM OS REQUISITOS DO AUTOR DTO
         try {
             Autor autorEntidade = autorDTO.mapearParaAutor(); // PEGUEI LA NO DTO
             autorService.salvar(autorEntidade); // SALVANDO O AUTORENTIDADE QUE CONTEM APENAS AQUELAS INFORMAÇÕES (NOME, DATANACIMENTO, NACIONALIDADE)
@@ -83,7 +85,7 @@ public class AutorController {
     @GetMapping  //TOMAR CUIDADO PARA NÃO TER PARAMETROS REPETIDOS
     public ResponseEntity<List<AutorDTO>> pesquisar (@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) { // RequestParam PARAMETROS DA PESQUIA, , required = false INDICA QUE NÃO É OBRIGATORIO PASSAR ESSES 2 PARAMETROS
 
-        List<Autor> resultado =  autorService.pesquisarAutor(nome, nacionalidade);
+        List<Autor> resultado =  autorService.pesquisarAutorByExample(nome, nacionalidade);
         List<AutorDTO> lista = resultado
                 .stream()
                 .map(autor ->  new AutorDTO( // AQUI ELE VAI MAPEAR CADA RESULTADO
@@ -93,7 +95,8 @@ public class AutorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizarAutor(@PathVariable Long id, @RequestBody AutorDTO dto) { // (@PathVariable PARA PEGAR O PARAMETRO ID DO ENDIPOPINT E O @RequestBody PARA MOSTRAR O CORPO DO DTO
+    public ResponseEntity<Object> atualizarAutor(@PathVariable Long id, @RequestBody @Valid AutorDTO dto) { // (@PathVariable PARA PEGAR O PARAMETRO ID DO ENDIPOPINT E O @RequestBody PARA MOSTRAR O CORPO DO DTO
+        //@Valid PARA VALIDAR SE OS CAMPOS FORAM PREENCHIDOS CORRETAMENTE DE ACORDO COM OS REQUISITOS DO AUTOR DTO
         try {
             Optional<Autor> atualizarAutorPorId = autorService.obterPorId(id);
 

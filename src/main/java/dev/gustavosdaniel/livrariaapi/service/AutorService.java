@@ -7,6 +7,8 @@ import dev.gustavosdaniel.livrariaapi.repository.AutorRepository;
 import dev.gustavosdaniel.livrariaapi.repository.LivroRepository;
 import dev.gustavosdaniel.livrariaapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,6 +62,21 @@ public class AutorService {
         }
 
         return autorRepository.findAll();
+    }
+
+    public List<Autor> pesquisarAutorByExample(String nome, String nacionalidade) {
+        Autor autor = new Autor();
+
+        autor.setNome(nome);
+        autor.setNacionalidade(nacionalidade);
+
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withIgnoreCase("id", "dataNascimento", "dataCadastro") //AQUI ELE IGNORA OS CAMPOS QUE NÃO SÃO FEITO PARA PESQUISAR
+                .withIgnoreNullValues()//ELE VAI IGNORAR QUALQUER OUTRO VALOR NULO QUE NÃO FOI PREENCHIDO
+                .withIgnoreCase() // ELE VAI IGNORAR SE TA EM CAIXA ALTA OU EM MINUSCOLO
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // AQUI ELE VAI BUSCAR O AUTOR MESMO SE A PALAVRA NÃO MESTIVER COMPLETO EX GUS VAI BUSCAR AUTOR QUE TEM ESSAS LETRAS
+        Example<Autor> autorExample = Example.of(autor, exampleMatcher);
+        return autorRepository.findAll(autorExample); // TEM QUE SER O FINDALL EXAMPLE
     }
 
     public void atualizarAutorPorId(Autor autor) {
