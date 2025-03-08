@@ -2,13 +2,18 @@ package dev.gustavosdaniel.livrariaapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data //UMA ANOTAÇÃO DO LOMBOK PARA SUBSTITUIR GAT SET TOSTRING HASCODE
 @Entity
 @Table(name = "livro")
+@EntityListeners(AuditingEntityListener.class) // PARA QUE A ANOTAÇAO DA DATA DE CERTO
 public class Livro {
 
     @Id
@@ -35,6 +40,17 @@ public class Livro {
     @ManyToOne // MUITOS LIVROS PARA UM AUTOR
     @JoinColumn() //SERVE PARA MOSTRAR QUE É UM RELACIONAMENTO FK
     private Autor autor;
+
+    @CreatedDate //TODA VES QUE FOI CRIAR A DATA ELE JA VAI COLOCAR AUTOMATICAMENTE
+    @Column(name = "data_cadastro", nullable = false)
+    private LocalDateTime dataCadastro;
+
+    @LastModifiedDate // TODA VEZ QUE FOR MODEIFICAR A DATA ELE JA VAI SER MODIFICADO AUTOMATICAMENTE
+    @Column(name = "data_atualização", nullable = false)
+    private LocalDateTime dataAtualizacao;
+
+    @Column(name = "id_usuario")
+    private Long idUsuario;
 
 
 
